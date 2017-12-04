@@ -1,8 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class MainFrame extends JFrame{
-
+public class SFrame extends JFrame{
+    private Server serv;
     Container cp;
 
 //    private JPanel jpn1 = new JPanel();
@@ -25,10 +27,10 @@ public class MainFrame extends JFrame{
 
     private JPanel jpn4 = new JPanel();
     private JTextField jtfDown =new JTextField();
-    private JButton jbtn = new JButton("Sent");
+    private JButton jbtnSent = new JButton("Sent");
 
 
-    public MainFrame(){
+    public SFrame(){
         this.setTitle("Server");
         initComp();
     }
@@ -66,8 +68,35 @@ public class MainFrame extends JFrame{
 
         jpn4.setLayout(new BorderLayout());
         jpn4.add(jtfDown,BorderLayout.CENTER);
-        jpn4.add(jbtn,BorderLayout.EAST);
+        jpn4.add(jbtnSent,BorderLayout.EAST);
         cp.add(jpn4,BorderLayout.SOUTH);
 
+        jbtnStart.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                serv = new Server(SFrame.this);
+                serv.start();
+                jta.append("Waiting connect in ...\n");
+                ((JButton)ae.getSource()).setEnabled(false);
+            }
+        });
+        jbtnExit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                System.exit(0);
+            }
+        });
+        jbtnSent.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                serv.send2client(jtfDown.getText()+"\n");
+                jtfDown.setText("");
+            }
+        });
+
+    }
+    public void addMsg(String inStr){
+        jta.append("Client:"+inStr+"\n");
+    }
+    public static void main(String argv[]){
+        SFrame sFrm = new SFrame();
+        sFrm.setVisible(true);
     }
 }
